@@ -156,7 +156,7 @@ class MaildroidX(
             attachments(attachments.map { uri -> MaildroidXAttachment(uri, uri) })
         }
 
-        fun attachments(attachments: List<MaildroidXAttachment>) {
+        fun attachments(attachments: List<MaildroidXAttachment>) = apply {
             this.attachments?.addAll(attachments) ?: run { this.attachments = attachments.toMutableList() }
         }
 
