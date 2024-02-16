@@ -9,18 +9,18 @@ import com.sun.mail.smtp.SMTPSendFailedException
 import com.sun.mail.smtp.SMTPSenderFailedException
 import jakarta.mail.AuthenticationFailedException
 import jakarta.mail.Authenticator
+import jakarta.mail.BodyPart
+import jakarta.mail.Message
+import jakarta.mail.MessagingException
 import jakarta.mail.PasswordAuthentication
 import jakarta.mail.Session
-import jakarta.mail.Message
-import jakarta.mail.BodyPart
 import jakarta.mail.Transport
-import jakarta.mail.MessagingException
 import jakarta.mail.internet.InternetAddress
 import jakarta.mail.internet.MimeBodyPart
 import jakarta.mail.internet.MimeMessage
 import jakarta.mail.internet.MimeMultipart
 import org.jsoup.Jsoup
-import org.jsoup.safety.Whitelist
+import org.jsoup.safety.Safelist
 import java.io.IOException
 
 class MaildroidX(
@@ -114,13 +114,26 @@ class MaildroidX(
             }
         }
 
-        fun cc(cc: String) = apply { this.ccRecipients?.add(cc) ?: run { this.ccRecipients = mutableListOf(cc)}}
+        fun cc(cc: String) =
+            apply { this.ccRecipients?.add(cc) ?: run { this.ccRecipients = mutableListOf(cc) } }
 
-        fun cc(cc: List<String>) = apply { this.ccRecipients?.addAll(cc) ?: run { this.ccRecipients = cc.toMutableList() }}
+        fun cc(cc: List<String>) = apply {
+            this.ccRecipients?.addAll(cc) ?: run {
+                this.ccRecipients = cc.toMutableList()
+            }
+        }
 
-        fun bcc(bcc: String) = apply { this.bccRecipients?.add(bcc) ?: run { this.bccRecipients = mutableListOf(bcc)}}
+        fun bcc(bcc: String) = apply {
+            this.bccRecipients?.add(bcc) ?: run {
+                this.bccRecipients = mutableListOf(bcc)
+            }
+        }
 
-        fun bcc(bcc: List<String>) = apply { this.bccRecipients?.addAll(bcc) ?: run { this.bccRecipients = bcc.toMutableList() }}
+        fun bcc(bcc: List<String>) = apply {
+            this.bccRecipients?.addAll(bcc) ?: run {
+                this.bccRecipients = bcc.toMutableList()
+            }
+        }
 
         fun from(from: String) = apply { this.from = from }
 
@@ -143,21 +156,23 @@ class MaildroidX(
         fun port(port: String) = apply { this.port = port }
 
         fun attachment(attachment: String) = apply {
-            this.attachment(MaildroidXAttachment(attachment, attachment))
+            this.customAttachment(MaildroidXAttachment(attachment, attachment))
         }
 
-        fun attachment(attachment: MaildroidXAttachment) {
+        fun customAttachment(attachment: MaildroidXAttachment) = apply {
             this.attachments?.add(attachment) ?: run {
                 this.attachments = mutableListOf(attachment)
             }
         }
 
         fun attachments(attachments: List<String>) = apply {
-            attachments(attachments.map { uri -> MaildroidXAttachment(uri, uri) })
+            customAttachments(attachments.map { uri -> MaildroidXAttachment(uri, uri) })
         }
 
-        fun attachments(attachments: List<MaildroidXAttachment>) = apply {
-            this.attachments?.addAll(attachments) ?: run { this.attachments = attachments.toMutableList() }
+        fun customAttachments(attachments: List<MaildroidXAttachment>) = apply {
+            this.attachments?.addAll(attachments) ?: run {
+                this.attachments = attachments.toMutableList()
+            }
         }
 
         fun type(type: MaildroidXType) = apply { this.type = type.toString() }
@@ -383,7 +398,7 @@ class MaildroidX(
         }
 
         private fun strapOfUnwantedJS(body: String): String {
-            return Jsoup.clean(body, Whitelist.relaxed().addTags("style"))
+            return Jsoup.clean(body, Safelist.relaxed().addTags("style"))
         }
     }
 
