@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     compileSdk 34
@@ -20,7 +21,6 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-
     }
 
     packagingOptions {
@@ -60,5 +60,19 @@ tasks.withType(KotlinCompile).configureEach {
         jvmTarget = '1.8'
         apiVersion = '1.1'
         languageVersion = '1.4'
+    }
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId = 'co.nedim'
+            artifactId = 'maildroid'
+            version = '1.0'
+
+            afterEvaluate {
+                from components.release
+            }
+        }
     }
 }
